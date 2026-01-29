@@ -21,32 +21,34 @@ const Hero = props => {
     window.scrollTo({ top: wrapperTop, behavior: 'smooth' })
   }
 
-  const GREETING_WORDS = siteConfig('GREETING_WORDS').split(',')
-  useEffect(() => {
-    updateHeaderHeight()
+  const GREETING_WORDS = [] // 直接设为空数组，不打字机效果
 
-    if (!typed && window && document.getElementById('typed')) {
-      loadExternalResource('/js/typed.min.js', 'js').then(() => {
-        if (window.Typed) {
-          changeType(
-            new window.Typed('#typed', {
-              strings: GREETING_WORDS,
-              typeSpeed: 200,
-              backSpeed: 100,
-              backDelay: 400,
-              showCursor: false,
-              smartBackspace: true
-            })
-          )
-        }
-      })
-    }
-
-    window.addEventListener('resize', updateHeaderHeight)
-    return () => {
-      window.removeEventListener('resize', updateHeaderHeight)
-    }
-  })
+useEffect(() => {
+  updateHeaderHeight()
+  
+  // 只有当有欢迎语时才初始化Typed.js
+  if (GREETING_WORDS.length > 0 && !typed && window && document.getElementById('typed')) {
+    loadExternalResource('/js/typed.min.js', 'js').then(() => {
+      if (window.Typed) {
+        changeType(
+          new window.Typed('#typed', {
+            strings: GREETING_WORDS,
+            typeSpeed: 200,
+            backSpeed: 100,
+            backDelay: 400,
+            showCursor: false,
+            smartBackspace: true
+          })
+        )
+      }
+    })
+  }
+  
+  window.addEventListener('resize', updateHeaderHeight)
+  return () => {
+    window.removeEventListener('resize', updateHeaderHeight)
+  }
+}, [])
 
   function updateHeaderHeight() {
     requestAnimationFrame(() => {
